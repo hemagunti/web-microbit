@@ -33,7 +33,24 @@
             const service = await server.getPrimaryService('12345678-1234-5678-1234-56789abcdef0');
             const characteristic = await service.getCharacteristic('12345678-1234-5678-1234-56789abcdef2');
             characteristic.addEventListener('characteristicvaluechanged', (evt) => {
-                console.log(`RX_BLE[${server.device.id}]: ${textDecoder.decode(evt.target.value)}`);
+                console.log(`RX_BLE[${server.device.id}]:`, evt.target.value);
+
+                const view = evt.target.value;
+                const isButton = view.getUint8(0) == 16;
+                const pressed = view.getUint8(2);
+                const buttonNo = view.getInt8(1);
+                console.log(buttonNo);
+
+                if (isButton && pressed) {
+                    console.log("yes");
+                    for(let [key, device] of ble_devices) {
+                      /*const randomNumber = Math.floor(Math.random() * Math.floor(6)) + 1;*/
+                      const name = "HEMA";
+                      
+                      writeToBLEDevice(device, name);
+                      
+                   }
+                }
             });
             return characteristic.startNotifications();
         }
